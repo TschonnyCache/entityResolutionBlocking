@@ -1,11 +1,14 @@
 import csv
-
+import json
 
 entity={}
 entitiesList=[]
 wantedDirectors=['Stanley Kubrick','Robert Rodriguez','Quentin Tarantino','Rainer Werner Fassbinder',
                  'Francis Ford Coppola', 'Ethan Coen', 'Akira Kurosawa', 'Christopher Nolan', 'James Cameron',
-                 'Martin Scorsese']
+                 'Martin Scorsese', 'Steven Spielberg', 'Ridley Scott','Woody Allen','Alfred Hitchcock',
+                 'Tim Burton','David Lynch', 'Wes Anderson','Sergio Leone','Billy Wilder','Hayao Miyazaki'
+
+]
 wantedMovies=[]
 with open('name.basics.tsv') as nameFile:
     next(nameFile) # skip headings
@@ -14,7 +17,7 @@ with open('name.basics.tsv') as nameFile:
         if name in wantedDirectors:
             # extracting the author
             entity= {'idIMDB' : id, 'name' : name, 'birthYear' : birthYear,  'deathYear' : deathYear,
-                     'primaryProfession': primaryProfession, 'knownForTitles': knownForTitles }
+                     'knownForTitles': knownForTitles }
             entitiesList.append(entity)
             wantedDirectors.remove(name) # There were several duplicate names but the 'famous' people have the lower id
                                         # and therefore appear first in the files
@@ -33,8 +36,8 @@ with open('title.basics.tsv') as moviesFile:
         if movies[0] in wantedMovies:
            entity={'idIMDB': movies[0], 'title': movies[3], 'year': movies[5]}
            entitiesList.append(entity)
+           if len(wantedMovies) == 0:  # Stop looking for movies once they have all been found
+               break
 
-for entity in entitiesList:
-   print "\n new entity \n"
-   for key in entity:
-       print key + ' ' + entity[key]
+with open('entitiesListIMDB.json','w') as outfile:
+    json.dump(entitiesList, outfile)
