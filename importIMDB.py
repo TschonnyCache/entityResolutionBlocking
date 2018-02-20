@@ -22,17 +22,17 @@ with open('name.basics.tsv') as nameFile:
             # extracting the movies s/he is famous for
             knownFor = knownForTitles.split(",")
             wantedMovies.extend(knownFor) # Collecting the movies from the current director in the to query list
-
+length = 0
 with open('title.basics.tsv') as moviesFile:
     next(moviesFile) # skip headings
     reader = csv.reader(moviesFile, delimiter='\t')
-    for tconst, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtimeMinutes, genres in reader:
-        if tconst in wantedMovies:
-            entity={'idIMDB': tconst, 'title': originalTitle, 'year': startYear}
-            entitiesList.append(entity)
-
+    # for tconst, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtimeMinutes, genres in reader:
+    for movies in reader:
+        if movies[0] in wantedMovies:
+           entity={'idIMDB': movies[0], 'title': movies[3], 'year': movies[5]}
+           entitiesList.append(entity)
 
 for entity in entitiesList:
-    print "\n new entity \n"
-    for key in entity:
-        print key + ' ' + entity[key]
+   print "\n new entity \n"
+   for key in entity:
+       print key + ' ' + entity[key]
