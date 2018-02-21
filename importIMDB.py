@@ -34,7 +34,7 @@ with open('title.basics.tsv') as moviesFile:
                                                                             #  special processing of quote characters"
     for movies in reader:
         if movies[0] in wantedMovies:
-           entity={'idIMDB': movies[0], 'title': movies[3], 'year': movies[5]}
+           entity={'idIMDB': movies[0], 'name': movies[3], 'year': movies[5]}
            entitiesList.append(entity)
            if len(wantedMovies) == 0:  # Stop looking for movies once they have all been found
                break
