@@ -4,7 +4,7 @@ import pdb
 with open('entitiesListIMDB.json') as json_file:
     entitiesList1 = json.load(json_file)
 
-with open('entitiesListIMDB2.json') as json_file:
+with open('entitiesListAlternate.json') as json_file:
     entitiesList2 = json.load(json_file)
 datasets = [entitiesList1, entitiesList2]
 # Tokens as keys and the value is a list of containing 

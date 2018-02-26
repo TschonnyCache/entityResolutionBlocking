@@ -8,7 +8,7 @@ with open('entitiesListAlternate.json') as json_file:
     entitiesList2 = json.load(json_file)
 datasets = [entitiesList1, entitiesList2]
 
-with open('attributeClusteringBlockingResult.json') as json_file:
+with open('tokenBlockingResult.json') as json_file:
     blocks = json.load(json_file)
 
 nodes=[]
@@ -39,7 +39,27 @@ def commonBlockScheme():
     for edgeIndex, edge in enumerate(edges):
         edgeWeights[edgeIndex]=getNumberOfCommonBlocks(edge)
 
-commonBlockScheme()
-print("a")
+def getNumberOfBlocksForEntity(entity):
+    counter = 0
+    for block in blocks:
+        entitiesList = blocks[block]
+        if list(entity) in entitiesList:
+            counter += 1
+    return counter
+
+def jaccardScheme():
+    for edgeIndex, edge in enumerate(edges):
+        entities = list(edge)
+        numberOfCommonBlocks=getNumberOfCommonBlocks(edge)
+        numOfA = getNumberOfBlocksForEntity(entities[0])
+        numOfB = getNumberOfBlocksForEntity(entities[1])
+        weight = float(numberOfCommonBlocks) / float( numOfA + numOfB - numberOfCommonBlocks)
+        edgeWeights[edgeIndex] = weight
+
+#Weighting schemes
+#commonBlockScheme()
+jaccardScheme()
+print('a')
+
 
 
