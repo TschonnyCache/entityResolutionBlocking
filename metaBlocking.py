@@ -13,6 +13,7 @@ with open('attributeClusteringBlockingResult.json') as json_file:
 
 nodes=[]
 edges=[]
+edgeWeights = dict()
 
 #graph building
 for block in blocks:
@@ -24,3 +25,21 @@ for block in blocks:
         edge = {tuple(permutation[0]),tuple(permutation[1])}
         if edge not in edges:
             edges.append(edge)
+
+def getNumberOfCommonBlocks(edge):
+    counter = 0
+    entities = list(edge)
+    for block in blocks:
+        entitiesList = blocks[block]
+        if list(entities[0]) in entitiesList and list(entities[1]) in entitiesList:
+            counter += 1
+    return counter
+
+def commonBlockScheme():
+    for edgeIndex, edge in enumerate(edges):
+        edgeWeights[edgeIndex]=getNumberOfCommonBlocks(edge)
+
+commonBlockScheme()
+print("a")
+
+
