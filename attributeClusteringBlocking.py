@@ -110,17 +110,29 @@ def cleanClusters(listOfClusters):
 def createBlocksfromClusters(listOfClusters,attributeNames,attributeNames2):
     attributeNames.update(attributeNames2)
     blocks = dict()
-    for cluster in listOfClusters:
+    for clusterIndex, cluster in enumerate(listOfClusters):
         for attribute in cluster:
             for value in attributeNames[attribute]:
-                for dataset in datasets:
-                    for entity in dataset:
+                for datasetIndex, dataset in enumerate(datasets):
+                    for entityIndex, entity in enumerate(dataset):
                         if attribute[0] in entity:
                             if entity[attribute[0]] == value:
-                                key = (cluster,attribute)
-                                print type(key)
-                                blocks[key] = (dataset,entity)
-    return blocks
+                                # next(iter(cluster))[0] is the name of the first attribute in the cluster
+                                key = 'C' + unicode(clusterIndex) + '.' + value
+                                value = (datasetIndex,entityIndex)
+                                if key in blocks:
+                                    if not value in blocks[key]:
+                                        blocks[key].append(value)
+                                else:
+                                    blocks[key]= [value]
+
+    #removing blocks of size 1
+    fliterdBlocks = dict()
+    for block, entities in blocks.iteritems():
+        if not len(entities) == 1:
+            fliterdBlocks[block]=entities
+
+    return fliterdBlocks
 
 # extracting attribute names and computing most similar attributes
 attributeNames1 = extractAttributeNames(entitiesList1,1)
@@ -131,5 +143,6 @@ links2to1 = createLinks(attributeNames2,attributeNames1)
 #creating the transitive closure
 listOfClusters = computeTransitiveClosureWrapper(links1to2, links2to1)
 cleanListOfClusters = cleanClusters(listOfClusters)
-#blocks = createBlocksfromClusters(cleanListOfClusters,attributeNames1,attributeNames2)
-
+blocks = createBlocksfromClusters(cleanListOfClusters,attributeNames1,attributeNames2)
+with open('attributeClusteringBlockingResult.json', 'w') as outfile:
+    json.dump(blocks, outfile)
