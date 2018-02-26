@@ -56,9 +56,25 @@ def jaccardScheme():
         weight = float(numberOfCommonBlocks) / float( numOfA + numOfB - numberOfCommonBlocks)
         edgeWeights[edgeIndex] = weight
 
+def getAverageEdgeWeightOfGraph():
+    averageWeight = 0
+    for weight in edgeWeights:
+        averageWeight += edgeWeights[weight]
+    numberOfWeights= float(len(edgeWeights))
+    averageWeight = float(averageWeight) / numberOfWeights
+    return averageWeight
+
+def weightEdgePruning():
+    averageWeight = getAverageEdgeWeightOfGraph()
+    for edgeIndex, weight in edgeWeights.iteritems():
+        if weight < averageWeight:
+            edges[edgeIndex] = None
+
+
 #Weighting schemes
 #commonBlockScheme()
 jaccardScheme()
+weightEdgePruning()
 print('a')
 
 
