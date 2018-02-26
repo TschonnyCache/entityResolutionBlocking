@@ -65,10 +65,16 @@ def calculateSimilarities():
 
 createTokenBlocks(datasets[0], 0)
 createTokenBlocks(datasets[1], 1)
-
 removeUnnecessaryBlocks()
-calculateSimilarities()
 
-print similarities
+newBlocks = dict()
+for block in blocks:
+	blockList = []
+	for entity in blocks[block]:
+		blockList.append([entity['dataset'], entity['index']])
+	newBlocks[block] = blockList
+
+with open('tokenBlockingResult.json', 'w') as outfile:
+    json.dump(newBlocks, outfile)
 
 
