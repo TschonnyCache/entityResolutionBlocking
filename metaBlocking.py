@@ -1,5 +1,6 @@
 import json
 import itertools
+import math
 
 with open('entitiesListIMDB.json') as json_file:
     entitiesList1 = json.load(json_file)
@@ -24,6 +25,7 @@ for block in blocks:
     for permutation in permutations:
         edge = {tuple(permutation[0]),tuple(permutation[1])}
         if edge not in edges:
+            # this is why we have edges as sets
             edges.append(edge)
 
 def getNumberOfCommonBlocks(edge):
@@ -70,11 +72,62 @@ def weightEdgePruning():
         if weight < averageWeight:
             edges[edgeIndex] = None
 
+def getNeighborhood(node):
+    neighborhood = []
+    neighborEdgesIndices = []
+    for index, edge in enumerate(edges):
+        if tuple(node) == list(edge)[0]:
+            neighborhood.append(list(edge)[1])
+            neighborEdgesIndices.append(index)
+        elif tuple(node) == list(edge)[1]:
+            neighborhood.append(list(edge)[0])
+            neighborEdgesIndices.append(index)
+    return neighborhood, neighborEdgesIndices
+
+def calculateBlockingCardinality():
+    blockingCardinality = 0
+    for block in blocks:
+        blockingCardinality += len(blocks[block])
+    return float(blockingCardinality) / float(len(nodes))
+
+def calculateK(blockingCardinality):
+    return int(math.floor(blockingCardinality-1))
+
+def cardinalityNodePruning():
+    directedEdges = []
+    bC = calculateBlockingCardinality()
+    k = calculateK(bC)
+    neighborEdgeIndexAndWeights = []
+    for node in nodes:
+        neighborhood, neighborEdgesIndices = getNeighborhood(node)
+
+        # creating a list of the neighboring edges with tuples of the edge index in the main
+        # edge list and its weight
+        for edgeIndex in neighborEdgesIndices:
+            # Saving the index of the edges in the main edge list and its weight
+            neighborEdgeIndexAndWeights.append((edgeIndex,edgeWeights[edgeIndex]))
+
+        # sorting the neighboring edges by their weight
+        neighborEdgeIndexAndWeights = sorted(neighborEdgeIndexAndWeights,key=lambda weight: weight[1], reverse=True)
+        # selecting the top k edges
+        topKEdgeIndexAndWeights = neighborEdgeIndexAndWeights[:k]
+        # creating a directed edge for every top k edge
+        for edgeIndexAndWeight in topKEdgeIndexAndWeights:
+            # from the original edges list, take the top k indices we just computed
+            originalEdge = list(edges[edgeIndexAndWeight[0]])
+            # checking if the root of the edge is the node we are analysing
+            if originalEdge[0] == tuple(node):
+                directedEdges.append(originalEdge)
+            else:
+                originalEdge.reverse()
+                directedEdges.append(originalEdge)
+    return directedEdges
 
 #Weighting schemes
 #commonBlockScheme()
 jaccardScheme()
-weightEdgePruning()
+#weightEdgePruning()
+directedEdges = cardinalityNodePruning()
 print('a')
 
 
