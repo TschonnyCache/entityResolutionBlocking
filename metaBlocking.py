@@ -72,17 +72,16 @@ def weightEdgePruning():
         if weight < averageWeight:
             edges[edgeIndex] = None
 
-def getNeighborhood(node):
-    neighborhood = []
+def getWeightedNeighborhood(node):
+    # creating a list of the neighboring edges with tuples of the edge index in the main
+    # edge list and its weight
     neighborEdgesIndices = []
     for index, edge in enumerate(edges):
         if tuple(node) == list(edge)[0]:
-            neighborhood.append(list(edge)[1])
-            neighborEdgesIndices.append(index)
+            neighborEdgesIndices.append((index,edgeWeights[index]))
         elif tuple(node) == list(edge)[1]:
-            neighborhood.append(list(edge)[0])
-            neighborEdgesIndices.append(index)
-    return neighborhood, neighborEdgesIndices
+            neighborEdgesIndices.append((index,edgeWeights[index]))
+    return neighborEdgesIndices
 
 def calculateBlockingCardinality():
     blockingCardinality = 0
@@ -97,16 +96,9 @@ def cardinalityNodePruning():
     directedEdges = []
     bC = calculateBlockingCardinality()
     k = calculateK(bC)
-    neighborEdgeIndexAndWeights = []
     for node in nodes:
-        neighborhood, neighborEdgesIndices = getNeighborhood(node)
-
-        # creating a list of the neighboring edges with tuples of the edge index in the main
-        # edge list and its weight
-        for edgeIndex in neighborEdgesIndices:
-            # Saving the index of the edges in the main edge list and its weight
-            neighborEdgeIndexAndWeights.append((edgeIndex,edgeWeights[edgeIndex]))
-
+        # getting all neighboring edges and their weights
+        neighborEdgeIndexAndWeights = getWeightedNeighborhood(node)
         # sorting the neighboring edges by their weight
         neighborEdgeIndexAndWeights = sorted(neighborEdgeIndexAndWeights,key=lambda weight: weight[1], reverse=True)
         # selecting the top k edges
@@ -128,7 +120,6 @@ def cardinalityNodePruning():
 jaccardScheme()
 #weightEdgePruning()
 directedEdges = cardinalityNodePruning()
-print('a')
 
 
 
