@@ -16,7 +16,7 @@ nodes=[]
 edges=[]
 edgeWeights = dict()
 
-#graph building
+# graph building
 for block in blocks:
     for entity in blocks[block]:
         if not entity in nodes:
@@ -28,6 +28,7 @@ for block in blocks:
             # this is why we have edges as sets
             edges.append(edge)
 
+# How many common blocks 2 entities share
 def getNumberOfCommonBlocks(edge):
     counter = 0
     entities = list(edge)
@@ -37,10 +38,13 @@ def getNumberOfCommonBlocks(edge):
             counter += 1
     return counter
 
+# Blocking scheme where the edges are weighted based 
+# on the common blocks between the entities in each node.
 def commonBlockScheme():
     for edgeIndex, edge in enumerate(edges):
         edgeWeights[edgeIndex]=getNumberOfCommonBlocks(edge)
 
+# How many blocks is an entity in
 def getNumberOfBlocksForEntity(entity):
     counter = 0
     for block in blocks:
@@ -49,6 +53,8 @@ def getNumberOfBlocksForEntity(entity):
             counter += 1
     return counter
 
+# Blocking scheme where the edges are weighted based 
+# on how similar 2 entities are when looking at their blocks
 def jaccardScheme():
     for edgeIndex, edge in enumerate(edges):
         entities = list(edge)
@@ -66,6 +72,8 @@ def getAverageEdgeWeightOfGraph():
     averageWeight = float(averageWeight) / numberOfWeights
     return averageWeight
 
+# Pruning method where edges are removed
+# if their weight is below average
 def weightEdgePruning():
     averageWeight = getAverageEdgeWeightOfGraph()
     for edgeIndex, weight in edgeWeights.iteritems():
@@ -115,11 +123,67 @@ def cardinalityNodePruning():
                 directedEdges.append(originalEdge)
     return directedEdges
 
-#Weighting schemes
+# Collect the new blocks based on the graph from cardinality node pruning.
+# A block is created by taking a nodes directed edges 
+# and combining the nodes that are pointed at in to a block.
+def collectDirecterGraphBlocks(directedEdges):
+	directedBlocks = dict()
+	for edge in directedEdges:
+		# if the origin node of the arrow already has a block
+		if edge[0] in directedBlocks:
+			directedBlocks[edge[0]].append(edge[1])
+		# create a new block for the edges origin node
+		else:
+			directedBlocks[edge[0]] = [edge[1]]
+	return directedBlocks
+
+def updateNeighbourhood(node1, node2, neighbourhood):
+	if node1 in neighbourhood:
+		neighbourhood[node1].append(node2)
+	else:
+		neighbourhood[node1] = [node2]
+	return neighbourhood
+
+def recursiveBlockCollector(node, neighbourhood, usedNodes):
+	block = []
+	if node not in usedNodes:
+		block.append(node)
+		usedNodes.append(node)
+		for innerNode in neighbourhood[node]:
+			innerBlock, usedNodes = recursiveBlockCollector(innerNode, neighbourhood, usedNodes)
+			block += innerBlock
+	return block, usedNodes
+
+# Collect the blocks based the the graph from weighted edge pruning.
+# Blcoks are created by following the edges in the graph.
+def collectGraphBlocks():
+	resultBlocks = []
+	# list of the nodes that have already been added to blocks
+	usedNodes = []
+	neighbourhood = dict()
+	# lets get the whole neighbourhood for all nodes
+	for index, edge in enumerate(edges):
+		if edge is not None:
+			# add entries for the nodes or update with new neighbours
+			neighbourhood = updateNeighbourhood(list(edge)[0], list(edge)[1], neighbourhood)
+			neighbourhood = updateNeighbourhood(list(edge)[1], list(edge)[0], neighbourhood)
+	# Iterate over nodes, 
+	# and if the node is not in any of the blocks, 
+	# create a new block for it and its neighbours.
+	for node in neighbourhood:
+		if node not in usedNodes:
+			newBlock, usedNodes = recursiveBlockCollector(node, neighbourhood, usedNodes)
+			resultBlocks.append(newBlock)
+	return resultBlocks
+
+# Weighting schemes
 #commonBlockScheme()
 jaccardScheme()
-#weightEdgePruning()
+
+# Pruning schemes
 directedEdges = cardinalityNodePruning()
+weightEdgePruning()
 
-
-
+# Collecting the new blocks
+directedResultBlocks = collectDirecterGraphBlocks(directedEdges)
+resultBlocks = collectGraphBlocks()
