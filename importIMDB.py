@@ -13,8 +13,8 @@ wantedDirectors2=['Stanley Kubrick','Robert Rodriguez','Quentin Tarantino','Rain
                  'Joel Coen', 'Buster Keaton', 'Roman Polanski', 'Peter Jackson', 'Mel Brooks'
 ]
 
-fileName = 'entitiesListIMDB.json'
-fileName2 = 'entitiesListAlternate.json'
+fileName = 'entitiesA.json'
+fileName2 = 'entitiesB.json'
 
 attributeNames=['idIMDB','name','birthYear','deathYear', 'knownForTitles', 'year']
 attributeNames2=['idAlt','label','yearOfBirth','yearOfDeath','knownFor','year']

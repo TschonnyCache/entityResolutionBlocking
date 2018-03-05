@@ -1,9 +1,9 @@
 import json
 
-with open('entitiesListIMDB.json') as json_file:
+with open('entitiesA.json') as json_file:
     entitiesList1 = json.load(json_file)
 
-with open('entitiesListAlternate.json') as json_file:
+with open('entitiesB.json') as json_file:
     entitiesList2 = json.load(json_file)
 datasets = [entitiesList1, entitiesList2]
 
@@ -144,5 +144,5 @@ links2to1 = createLinks(attributeNames2,attributeNames1)
 listOfClusters = computeTransitiveClosureWrapper(links1to2, links2to1)
 cleanListOfClusters = cleanClusters(listOfClusters)
 blocks = createBlocksfromClusters(cleanListOfClusters,attributeNames1,attributeNames2)
-with open('attributeClusteringBlockingResult.json', 'w') as outfile:
+with open('blocks.json', 'w') as outfile:
     json.dump(blocks, outfile)

@@ -1,10 +1,10 @@
 import json
 import pdb
 
-with open('entitiesListIMDB.json') as json_file:
+with open('entitiesA.json') as json_file:
     entitiesList1 = json.load(json_file)
 
-with open('entitiesListAlternate.json') as json_file:
+with open('entitiesB.json') as json_file:
     entitiesList2 = json.load(json_file)
 datasets = [entitiesList1, entitiesList2]
 # Tokens as keys and the value is a list of containing 
@@ -74,7 +74,7 @@ for block in blocks:
 		blockList.append([entity['dataset'], entity['index']])
 	newBlocks[block] = blockList
 
-with open('tokenBlockingResult.json', 'w') as outfile:
+with open('blocks.json', 'w') as outfile:
     json.dump(newBlocks, outfile)
 
 

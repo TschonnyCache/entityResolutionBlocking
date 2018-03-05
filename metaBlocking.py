@@ -1,15 +1,16 @@
 import json
 import itertools
 import math
+import pdb
 
-with open('entitiesListIMDB.json') as json_file:
+with open('entitiesA.json') as json_file:
     entitiesList1 = json.load(json_file)
 
-with open('entitiesListAlternate.json') as json_file:
+with open('entitiesB.json') as json_file:
     entitiesList2 = json.load(json_file)
 datasets = [entitiesList1, entitiesList2]
 
-with open('tokenBlockingResult.json') as json_file:
+with open('blocks.json') as json_file:
     blocks = json.load(json_file)
 
 nodes=[]
@@ -18,13 +19,17 @@ edgeWeights = dict()
 
 # graph building
 for block in blocks:
+    # Add all the entities from the blocks in to 'nodes'
     for entity in blocks[block]:
         if not entity in nodes:
             nodes.append(entity)
+    # Get all permutations of 2 entities from a block
     permutations = itertools.permutations(blocks[block],2)
     for permutation in permutations:
+        # Create a nondirected edge for each permutation using 'set()'
         edge = {tuple(permutation[0]),tuple(permutation[1])}
-        if edge not in edges:
+        # Add each nondirected edge in to 'edges' once
+        if len(edge) == 2 and edge not in edges:
             # this is why we have edges as sets
             edges.append(edge)
 
@@ -102,7 +107,9 @@ def calculateK(blockingCardinality):
 
 def cardinalityNodePruning():
     directedEdges = []
+    # all block sizes added together, divided by the total ammount of nodes
     bC = calculateBlockingCardinality()
+    # math.floor(bc)
     k = calculateK(bC)
     for node in nodes:
         # getting all neighboring edges and their weights
@@ -187,3 +194,8 @@ weightEdgePruning()
 # Collecting the new blocks
 directedResultBlocks = collectDirecterGraphBlocks(directedEdges)
 resultBlocks = collectGraphBlocks()
+
+print "directedResultBlocks, ammount of blocks: " + str(len(directedResultBlocks))
+print directedResultBlocks
+print "resultBlocks, ammount of blocks: " + str(len(resultBlocks))
+print resultBlocks
