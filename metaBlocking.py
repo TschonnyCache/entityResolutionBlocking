@@ -105,15 +105,20 @@ def calculateBlockingCardinality():
 def calculateK(blockingCardinality):
     return int(math.floor(blockingCardinality-1))
 
+def calculateLocalK(neighborhood):
+    cardinalityOfEdges = len(neighborhood)
+    k = int(math.ceil(0.1*cardinalityOfEdges))
+    return k
+
 def cardinalityNodePruning():
     directedEdges = []
-    # all block sizes added together, divided by the total ammount of nodes
-    bC = calculateBlockingCardinality()
-    # math.floor(bc)
-    k = calculateK(bC)
+
     for node in nodes:
         # getting all neighboring edges and their weights
         neighborEdgeIndexAndWeights = getWeightedNeighborhood(node)
+        # get k
+        k = calculateLocalK(neighborEdgeIndexAndWeights)
+        print("neigborhood " + str(len(neighborEdgeIndexAndWeights)) + " k " + str(k))
         # sorting the neighboring edges by their weight
         neighborEdgeIndexAndWeights = sorted(neighborEdgeIndexAndWeights,key=lambda weight: weight[1], reverse=True)
         # selecting the top k edges
@@ -162,7 +167,7 @@ def recursiveBlockCollector(node, neighbourhood, usedNodes):
 	return block, usedNodes
 
 # Collect the blocks based the the graph from weighted edge pruning.
-# Blcoks are created by following the edges in the graph.
+# Blocks are created by following the edges in the graph.
 def collectGraphBlocks():
 	resultBlocks = []
 	# list of the nodes that have already been added to blocks
@@ -183,6 +188,16 @@ def collectGraphBlocks():
 			resultBlocks.append(newBlock)
 	return resultBlocks
 
+def printNumberOfEdgesPerNode():
+    for node in nodes:
+        numberOfEdges = 0
+        for edge in edges:
+            if tuple(node) == list(edge)[0]:
+                numberOfEdges += 1
+            elif tuple(node) == list(edge)[1]:
+                numberOfEdges += 1
+        print(numberOfEdges)
+
 # Weighting schemes
 #commonBlockScheme()
 jaccardScheme()
@@ -195,7 +210,9 @@ weightEdgePruning()
 directedResultBlocks = collectDirecterGraphBlocks(directedEdges)
 resultBlocks = collectGraphBlocks()
 
-print "directedResultBlocks, ammount of blocks: " + str(len(directedResultBlocks))
-print directedResultBlocks
-print "resultBlocks, ammount of blocks: " + str(len(resultBlocks))
+print "Result of cardinality node pruning, amount of blocks: " + str(len(directedResultBlocks))
+for block in directedResultBlocks:
+    if len(directedResultBlocks[block]) > 1:
+        print directedResultBlocks[block]
+print "Result of weight edge pruning, amount of blocks: " + str(len(resultBlocks))
 print resultBlocks
