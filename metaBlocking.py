@@ -1,14 +1,17 @@
 import json
 import itertools
 import math
-import pdb
-
+import datetime
+"""
 with open('entitiesA.json') as json_file:
     entitiesList1 = json.load(json_file)
 
 with open('entitiesB.json') as json_file:
     entitiesList2 = json.load(json_file)
 datasets = [entitiesList1, entitiesList2]
+"""
+
+print datetime.datetime.now()
 
 with open('blocks.json') as json_file:
     blocks = json.load(json_file)
@@ -118,7 +121,6 @@ def cardinalityNodePruning():
         neighborEdgeIndexAndWeights = getWeightedNeighborhood(node)
         # get k
         k = calculateLocalK(neighborEdgeIndexAndWeights)
-        print("neigborhood " + str(len(neighborEdgeIndexAndWeights)) + " k " + str(k))
         # sorting the neighboring edges by their weight
         neighborEdgeIndexAndWeights = sorted(neighborEdgeIndexAndWeights,key=lambda weight: weight[1], reverse=True)
         # selecting the top k edges
@@ -149,44 +151,14 @@ def collectDirecterGraphBlocks(directedEdges):
 			directedBlocks[edge[0]] = [edge[1]]
 	return directedBlocks
 
-def updateNeighbourhood(node1, node2, neighbourhood):
-	if node1 in neighbourhood:
-		neighbourhood[node1].append(node2)
-	else:
-		neighbourhood[node1] = [node2]
-	return neighbourhood
-
-def recursiveBlockCollector(node, neighbourhood, usedNodes):
-	block = []
-	if node not in usedNodes:
-		block.append(node)
-		usedNodes.append(node)
-		for innerNode in neighbourhood[node]:
-			innerBlock, usedNodes = recursiveBlockCollector(innerNode, neighbourhood, usedNodes)
-			block += innerBlock
-	return block, usedNodes
 
 # Collect the blocks based the the graph from weighted edge pruning.
-# Blocks are created by following the edges in the graph.
 def collectGraphBlocks():
-	resultBlocks = []
-	# list of the nodes that have already been added to blocks
-	usedNodes = []
-	neighbourhood = dict()
-	# lets get the whole neighbourhood for all nodes
-	for index, edge in enumerate(edges):
-		if edge is not None:
-			# add entries for the nodes or update with new neighbours
-			neighbourhood = updateNeighbourhood(list(edge)[0], list(edge)[1], neighbourhood)
-			neighbourhood = updateNeighbourhood(list(edge)[1], list(edge)[0], neighbourhood)
-	# Iterate over nodes, 
-	# and if the node is not in any of the blocks, 
-	# create a new block for it and its neighbours.
-	for node in neighbourhood:
-		if node not in usedNodes:
-			newBlock, usedNodes = recursiveBlockCollector(node, neighbourhood, usedNodes)
-			resultBlocks.append(newBlock)
-	return resultBlocks
+    resultBlocks = []
+    for edge in edges:
+        if edge is not None:
+            resultBlocks.append(edge)
+    return resultBlocks
 
 def printNumberOfEdgesPerNode():
     for node in nodes:
@@ -210,9 +182,9 @@ weightEdgePruning()
 directedResultBlocks = collectDirecterGraphBlocks(directedEdges)
 resultBlocks = collectGraphBlocks()
 
+print datetime.datetime.now()
+
 print "Result of cardinality node pruning, amount of blocks: " + str(len(directedResultBlocks))
-for block in directedResultBlocks:
-    if len(directedResultBlocks[block]) > 1:
-        print directedResultBlocks[block]
+#print directedResultBlocks
 print "Result of weight edge pruning, amount of blocks: " + str(len(resultBlocks))
-print resultBlocks
+#print resultBlocks
