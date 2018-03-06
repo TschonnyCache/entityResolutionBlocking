@@ -16,8 +16,8 @@ wantedDirectors2=['Stanley Kubrick','Robert Rodriguez','Quentin Tarantino','Rain
 fileName = 'entitiesA.json'
 fileName2 = 'entitiesB.json'
 
-attributeNames=['idIMDB','name','birthYear','deathYear', 'knownForTitles', 'year']
-attributeNames2=['idAlt','label','yearOfBirth','yearOfDeath','knownFor','year']
+attributeNames=['idIMDB','name','birthYear', 'knownForTitles', 'year']
+attributeNames2=['idAlt','label','yearOfBirth', 'knownFor','year']
 
 def doExtraction(wantedDirectors, fileName, attList):
     entity = {}
@@ -30,8 +30,7 @@ def doExtraction(wantedDirectors, fileName, attList):
         for id, name, birthYear, deathYear,	primaryProfession, knownForTitles in reader:
             if name in wantedDirectors:
                 # extracting the author
-                entity= {attList[0] : id, attList[1] : name, attList[2] : birthYear,  attList[3] : deathYear,
-                         attList[4]: knownForTitles }
+                entity= {attList[0] : id, attList[1] : name, attList[2] : birthYear,  attList[3]: knownForTitles }
                 entitiesList.append(entity)
                 wantedDirectors.remove(name) # There were several duplicate names but the 'famous' people have the lower id
                                             # and therefore appear first in the files
@@ -48,7 +47,7 @@ def doExtraction(wantedDirectors, fileName, attList):
                                                                                 #  special processing of quote characters"
         for movies in reader:
             if movies[0] in wantedMovies:
-               entity={attList[0]: movies[0], attList[1]: movies[3], attList[5]: movies[5]}
+               entity={attList[0]: movies[0], attList[1]: movies[3], attList[4]: movies[5]}
                entitiesList.append(entity)
                if len(wantedMovies) == 0:  # Stop looking for movies once they have all been found
                    break

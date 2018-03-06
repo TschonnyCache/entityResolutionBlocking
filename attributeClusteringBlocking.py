@@ -49,6 +49,7 @@ def createLinks(attributeNames1, attributeNames2):
     links = {}
     for attributeName in attributeNames1:
         mostSimilarAttribute = getMostSimilarAttribute(attributeName,attributeNames1,attributeNames2)
+        # if there is no similar attribute, no link is created
         if not mostSimilarAttribute == 0:
             links[attributeName] = mostSimilarAttribute
     return links
@@ -58,8 +59,10 @@ def computeTransitiveClosure(links1to2, links2to1,listOfClusters):
     # attributes point towards ech other.
     # there are no links pointing towards the current attribute
     # there are links pointing towards the current attribute, that have to be adde to the set later.
-    sideBool = True
+
     for root in links1to2:
+        # switching the link set in which to search for the nex target
+        sideBool = True
         # creating a set from the current root
         target = links1to2[root]
         currentCluster = {root, target}
@@ -87,6 +90,9 @@ def computeTransitiveClosure(links1to2, links2to1,listOfClusters):
             if target in currentCluster:
                 listOfClusters.append(currentCluster)
                 break
+
+            # if both cases dont apply, add the current target to the current cluster and continue
+            currentCluster.add(target)
 
             sideBool = not sideBool
             root = target
