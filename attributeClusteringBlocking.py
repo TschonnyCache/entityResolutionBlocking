@@ -61,7 +61,7 @@ def computeTransitiveClosure(links1to2, links2to1,listOfClusters):
     # there are links pointing towards the current attribute, that have to be adde to the set later.
 
     for root in links1to2:
-        # switching the link set in which to search for the nex target
+        # switching the link set in which to search for the next target.
         sideBool = True
         # creating a set from the current root
         target = links1to2[root]
@@ -75,9 +75,9 @@ def computeTransitiveClosure(links1to2, links2to1,listOfClusters):
             else:
                 target = links1to2[target]
 
-            # checking if there a superset cluster exists
+            # checking if there is another cluster, that already contains the target node.
             for index, cluster in enumerate(listOfClusters):
-                # the current attribute links to a existing cluster
+                # the current attribute links to an existing cluster
                 if target in cluster:
                     # adding the current cluster to the existing one
                     listOfClusters[index] = cluster.union(currentCluster)
@@ -116,9 +116,11 @@ def cleanClusters(listOfClusters):
 def createBlocksfromClusters(listOfClusters,attributeNames,attributeNames2):
     attributeNames.update(attributeNames2)
     blocks = dict()
+    # first 3 loops: collecting all the values occuring in the attributes of the clusters
     for clusterIndex, cluster in enumerate(listOfClusters):
         for attribute in cluster:
             for value in attributeNames[attribute]:
+                # and now, for all the values find the entities that share the value and create a block from them
                 for datasetIndex, dataset in enumerate(datasets):
                     for entityIndex, entity in enumerate(dataset):
                         if attribute[0] in entity:
@@ -126,9 +128,11 @@ def createBlocksfromClusters(listOfClusters,attributeNames,attributeNames2):
                                 # next(iter(cluster))[0] is the name of the first attribute in the cluster
                                 key = 'C' + unicode(clusterIndex) + '.' + value
                                 value = (datasetIndex,entityIndex)
+                                # Check if there allready is a block for this value and if so add the entity to it
                                 if key in blocks:
                                     if not value in blocks[key]:
                                         blocks[key].append(value)
+                                # or create a new block
                                 else:
                                     blocks[key]= [value]
 
